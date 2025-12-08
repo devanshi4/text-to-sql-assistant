@@ -6,7 +6,7 @@ This application bridges the gap between non-technical business stakeholders and
 The system automatically translates natural language into SQL queries, executes them against a live **PostgreSQL** database, and presents the results in an interactive interface.
 
 ### 🎥 Demo
-*(Place your GIF or screenshot here. For now, you can delete this line or add: "Screenshots coming soon")*
+![App Demo](demo.png)
 
 ### 🛠️ Tech Stack
 * **Core Logic:** Python, LangChain (SQL Database Chain)
