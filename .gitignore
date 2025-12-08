@@ -1,0 +1,17 @@
+# Ignore the virtual environment
+venv/
+
+# Ignore Mac system files
+.DS_Store
+
+# Ignore the heavy database files
+dvdrental/
+dvdrental.zip
+dvdrental.tar
+
+# Ignore sensitive environment files (passwords)
+.env
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
