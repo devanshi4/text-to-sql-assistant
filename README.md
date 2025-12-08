@@ -13,7 +13,7 @@ The system automatically translates natural language into SQL queries, executes 
 
 ### 📸 Application Demo
 ![App Demo](demo.png)
-*(The AI Agent successfully navigating a complex Join across 3 tables: Payment → Rental → Inventory → Film)*
+*(The AI Agent successfully navigating a complex Join across 5 tables: Payment → Rental → Inventory → Film → Category)*
 
 ---
 
