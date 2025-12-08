@@ -25,5 +25,4 @@ The system automatically translates natural language into SQL queries, executes 
 
 **1. Clone the Repository**
 ```bash
-git clone [https://github.com/YOUR_USERNAME/ai-sql-assistant.git](https://github.com/YOUR_USERNAME/ai-sql-assistant.git)
-cd ai-sql-assistant
+git clone https://github.com/devanshi4/sql-ai-assistant.git
