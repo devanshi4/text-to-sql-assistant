@@ -1,88 +1,79 @@
-# 🎬 AI-Powered SQL Database Assistant
+# Natural-Language SQL Assistant
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
-![LangChain](https://img.shields.io/badge/LangChain-Framework-orange)
-![OpenAI](https://img.shields.io/badge/OpenAI-GPT--3.5-green)
-![Streamlit](https://img.shields.io/badge/Frontend-Streamlit-red)
-![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue)
+A Streamlit app that answers plain-English questions about a PostgreSQL database. A LangChain SQL agent reads the schema, writes the SQL, runs it, fixes its own errors, and replies in plain language.
 
-### 🚀 Project Overview
-This application bridges the gap between non-technical business stakeholders and complex SQL databases. By leveraging **Generative AI (OpenAI GPT-3.5)** and **LangChain**, it allows users to ask questions in plain English (e.g., *"Which movie category generated the highest revenue?"*) and receive accurate, data-backed answers immediately.
+**Stack:** Python · LangChain · OpenAI · PostgreSQL · Streamlit
 
-The system automatically translates natural language into SQL queries, executes them against a live **PostgreSQL** database (DVD Rental Schema), and presents the results in an interactive dashboard.
-
-### 📸 Application Demo
-![App Demo](demo.png)
-*(The AI Agent successfully navigating a complex Join across 5 tables: Payment → Rental → Inventory → Film → Category)*
+> Part of my portfolio at **[devanshi4.github.io](https://devanshi4.github.io)**
 
 ---
 
-### 💼 Business Value & Problem Solved
-**The Problem:**
-Business analysts and managers often need quick insights from databases but lack the SQL expertise to query complex schemas. This leads to a dependency on data teams for basic reports, creating bottlenecks.
+## The problem
 
-**The Solution:**
-This Self-Service AI Tool empowers stakeholders to:
-* **Reduce Ad-Hoc Requests:** Answer 80% of routine data questions instantly without engineering support.
-* **Accelerate Decision Making:** Cut down "time-to-insight" from hours to seconds.
-* **Democratize Data:** Make the 15-table DVD Rental dataset accessible to anyone on the team.
+Managers and analysts often need a quick number ("which film category made the most money?"). Getting it means writing a multi-table join they may not know how to write, so they wait on the data team. This app lets them ask the question directly and see the answer in seconds.
+
+## How it works
+
+```mermaid
+flowchart LR
+    A[Question in Streamlit] --> B[LangChain SQL agent]
+    B -->|reads table definitions| C[(PostgreSQL<br/>DVD Rental)]
+    B -->|schema + question| D[OpenAI GPT-3.5]
+    D -->|SQL| B
+    B -->|runs query| C
+    C -->|rows or error| B
+    B --> E[Plain-English answer]
+```
+
+![App demo](demo.png)
+
+*The agent answering a question that needs a five-table join: payment → rental → inventory → film → category.*
+
+1. The user enters an OpenAI key and database connection in the sidebar, then asks a question.
+2. The agent inspects the relevant table definitions and asks the model for a query.
+3. It runs the query on PostgreSQL. If the database returns an error, the agent sends the error back to the model and tries again.
+4. The result rows are summarized as a plain-English answer.
+
+## Design decisions
+
+- **An agent, not a single prompt.** A one-shot prompt fails silently when the SQL is wrong. The agent loop sees the database error and corrects the query, which matters for multi-table joins.
+- **Schema read at runtime.** The agent looks at the live table definitions instead of a hand-written description, so it stays correct if the schema changes.
+- **Deterministic output.** `temperature=0` makes the same question produce the same SQL, which makes answers easier to check.
+- **No stored secrets.** The API key and database password are typed into the sidebar each session and are never written to disk or the repo.
+
+## Run it locally
+
+You need Python 3.9+, PostgreSQL with the [DVD Rental sample database](https://neon.com/postgresql/postgresql-getting-started/postgresql-sample-database) restored, and an OpenAI API key.
+
+1. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. Start the app and fill in the sidebar:
+
+   ```bash
+   streamlit run app.py
+   ```
+
+For anything beyond a demo, connect with a read-only database user, so a generated query can never change data.
+
+## Project structure
+
+```
+├── app.py            # Streamlit UI and LangChain SQL agent
+├── requirements.txt
+└── demo.png
+```
+
+## Status and next steps
+
+- Connect through a read-only role by default and block anything that isn't a `SELECT`.
+- Show the generated SQL next to each answer, so users can check it.
+- Build a small set of test questions with known answers to measure accuracy when the model or prompt changes.
+- Move to a current OpenAI model.
 
 ---
 
-### 🛠️ Technical Architecture
-The application uses a **Retrieve-Then-Generate** architecture:
-1.  **User Input:** Natural language query via Streamlit.
-2.  **Schema Retrieval:** LangChain inspects the PostgreSQL table definitions.
-3.  **SQL Generation:** OpenAI GPT-3.5 translates the prompt + schema into a valid SQL query.
-4.  **Execution:** The query is run against the local PostgreSQL database using `psycopg2`.
-5.  **Response:** The raw data is formatted into a natural language summary and displayed.
-
-**Key Features:**
-* **Complex Query Handling:** Capable of generating `JOINs`, `GROUP BY`, and aggregations.
-* **Error Correction:** If the LLM generates invalid SQL, the agent catches the database error, feeds it back to the LLM, and retries automatically.
-* **Secure Connection:** Uses environment variables to manage database credentials and API keys securely.
-
----
-
-### 💻 How to Run Locally
-
-**1. Clone the Repository**
-```bash
-git clone [https://github.com/devanshi4/sql-ai-assistant.git](https://github.com/devanshi4/sql-ai-assistant.git)
-cd sql-ai-assistant
-
-2 Create Virtual Environment
-
-Bash
-python -m venv venv
-source venv/bin/activate   # On Windows: venv\Scripts\activate
-
-3. Install Dependencies
-
-Bash
-pip install -r requirements.txt
-
-4. Set Up Database Ensure you have a local PostgreSQL instance running with the DVD Rental sample database restored.
-
-5. Run the Application
-
-Bash
-streamlit run app.py
-
-📂 Project Structure
-
-Plaintext
-
-├── app.py                  # Main application logic (Streamlit + LangChain)
-├── requirements.txt        # List of Python dependencies
-├── .gitignore              # Files excluded from Git (passwords, venv)
-├── README.md               # Project documentation
-└── demo.png                # Screenshot for documentation
-
-🔮 Future Improvements
-
-* Visualization: Add automatic charting (Bar/Line graphs) for numerical results.
-
-* Containerization: Dockerize the application for easy cloud deployment (AWS EC2).
-
-* Open Source LLM: Experiment with Llama-2 or Mistral to run entirely offline.
+Built by **Devanshi Pandya** · [Portfolio](https://devanshi4.github.io) · [LinkedIn](https://www.linkedin.com/in/devanshi4/)
