@@ -6,6 +6,12 @@ A Streamlit app that answers plain-English questions about a PostgreSQL database
 
 > Part of my portfolio at **[devanshi4.github.io](https://devanshi4.github.io)**
 
+## Highlights
+
+- **Plain English in, multi-table SQL out:** handles questions that need a five-table join.
+- **Fixes its own mistakes:** when a query fails, the database error goes back to the model and it tries again.
+- **No secrets in the code:** the API key and database password are entered per session and never saved.
+
 ---
 
 ## The problem
